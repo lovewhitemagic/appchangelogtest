@@ -4,11 +4,69 @@
   <meta charset="UTF-8">
   <title>App 更新日志</title>
   <style>
-    body { font-family: Arial; padding: 20px; max-width: 800px; margin: auto; }
-    h1 { text-align: center; }
-    .lang-switch { text-align: center; margin-bottom: 20px; }
-    button { margin: 0 5px; padding: 5px 10px; cursor: pointer; }
-    .changelog-entry { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --date-color: #888888;
+      --entry-bg: #f9f9f9;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #1e1e1e;
+        --text-color: #f0f0f0;
+        --date-color: #aaaaaa;
+        --entry-bg: #2a2a2a;
+      }
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .lang-switch {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .changelog-entry {
+      margin-bottom: 20px;
+      padding: 10px;
+      background-color: var(--entry-bg);
+      border-radius: 6px;
+    }
+
+    .changelog-entry h1 {
+      font-size: 1.2em;
+      margin-bottom: 5px;
+      text-align: left; /* 左对齐版本文字 */
+    }
+
+    .changelog-entry p, .changelog-entry ul {
+      margin-left: 20px;
+    }
+
+    .changelog-entry h1::after {
+      content: attr(data-date);
+      display: block;
+      font-size: 0.85em; /* 日期字体小一点 */
+      color: var(--date-color);
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body>
@@ -31,19 +89,26 @@
 
       document.getElementById('title').innerText = lang === 'zh' ? 'App 更新日志' : 'App Changelog';
 
-      // 渲染 Markdown
       const html = md.render(text);
-
-      // 按版本条目分割显示
       const container = document.getElementById('changelog');
       container.innerHTML = html;
 
-      // 给每个条目加 class
+      // 处理每条版本条目
       const headers = container.querySelectorAll('h1');
       headers.forEach(h => {
+        const text = h.innerText;
+        const match = text.match(/(v[\d\.]+) - (\d{4}-\d{2}-\d{2})/);
+        let version = text;
+        let date = '';
+        if (match) {
+          version = match[1];
+          date = match[2];
+        }
         const div = document.createElement('div');
         div.className = 'changelog-entry';
         h.parentNode.insertBefore(div, h);
+        h.innerText = version;
+        h.setAttribute('data-date', date);
         div.appendChild(h);
         while(div.nextSibling && div.nextSibling.tagName !== 'H1') {
           div.appendChild(div.nextSibling);
