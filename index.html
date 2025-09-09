@@ -2,19 +2,23 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>App 更新日志</title>
+  <title>Shift 更新日志</title>
   <style>
     :root {
       --bg-color: #ffffff;
       --text-color: #000000;
       --date-color: #888888;
       --divider-color: #dddddd;
+      --icon-bg: #f0f0f0;
+      --icon-border: #cccccc;
     }
     body.dark-mode {
       --bg-color: #1e1e1e;
       --text-color: #f0f0f0;
       --date-color: #aaaaaa;
       --divider-color: #444444;
+      --icon-bg: #2a2a2a;
+      --icon-border: #555555;
     }
 
     body {
@@ -28,27 +32,28 @@
       position: relative;
     }
 
-    /* 左上角 App 图标和名称 */
-    .app-header {
+    /* 图标和标题左对齐 */
+    .header-container {
       display: flex;
       align-items: center;
       margin-bottom: 20px;
     }
 
-    .app-header img {
-      width: 48px;
-      height: 48px;
-      margin-right: 10px;
+    .app-icon {
+      width: 80px;   /* 放大图标 */
+      height: 80px;
+      border-radius: 12px; /* 圆角矩形 */
+      border: 2px solid var(--icon-border); /* 描边 */
+      background-color: var(--icon-bg);
+      padding: 5px;
+      margin-right: 15px;
+      box-sizing: border-box;
     }
 
-    .app-header .app-name {
-      font-size: 1.5em;
+    .header-title {
+      font-size: 2em;
       font-weight: bold;
-    }
-
-    h1 {
       text-align: left;
-      margin-bottom: 20px;
     }
 
     .lang-switch {
@@ -100,13 +105,11 @@
   <!-- 手动切换深浅色模式按钮 -->
   <div class="theme-toggle" onclick="toggleTheme()">🌞</div>
 
-  <!-- App 图标和名称 -->
-  <div class="app-header">
-    <img id="app-icon" src="shift light.jpg" alt="App Icon">
-    <div class="app-name">Shift</div>
+  <!-- 图标 + 标题 -->
+  <div class="header-container">
+    <img id="app-icon" class="app-icon" src="shift light.jpg" alt="App Icon">
+    <div class="header-title" id="title">Shift 更新日志</div>
   </div>
-
-  <h1 id="title">App 更新日志</h1>
 
   <div class="lang-switch">
     <button onclick="loadMarkdown('zh')">中文</button>
@@ -128,7 +131,6 @@
       updateAppIcon();
     }
 
-    // 根据深浅色模式更新 App 图标
     function updateAppIcon() {
       if(document.body.classList.contains('dark-mode')) {
         appIcon.src = 'shift dark.jpg';
@@ -142,7 +144,7 @@
       const res = await fetch(file);
       const text = await res.text();
 
-      document.getElementById('title').innerText = lang === 'zh' ? 'App 更新日志' : 'App Changelog';
+      document.getElementById('title').innerText = lang === 'zh' ? 'Shift 更新日志' : 'Shift Changelog';
 
       const html = md.render(text);
       const container = document.getElementById('changelog');
