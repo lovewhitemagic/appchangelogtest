@@ -8,15 +8,13 @@
       --bg-color: #ffffff;
       --text-color: #000000;
       --date-color: #888888;
-      --entry-bg: #f9f9f9;
+      --divider-color: #dddddd;
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-color: #1e1e1e;
-        --text-color: #f0f0f0;
-        --date-color: #aaaaaa;
-        --entry-bg: #2a2a2a;
-      }
+    body.dark-mode {
+      --bg-color: #1e1e1e;
+      --text-color: #f0f0f0;
+      --date-color: #aaaaaa;
+      --divider-color: #444444;
     }
 
     body {
@@ -26,6 +24,8 @@
       margin: auto;
       background-color: var(--bg-color);
       color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
+      position: relative;
     }
 
     h1 {
@@ -44,10 +44,9 @@
     }
 
     .changelog-entry {
-      margin-bottom: 20px;
-      padding: 10px;
-      background-color: var(--entry-bg);
-      border-radius: 6px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--divider-color); /* 浅灰色分割线 */
     }
 
     .changelog-entry h1 {
@@ -67,9 +66,21 @@
       color: var(--date-color);
       margin-top: 2px;
     }
+
+    /* 深浅色切换按钮 */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
+  <div class="theme-toggle" onclick="toggleTheme()">🌞</div>
+
   <h1 id="title">App 更新日志</h1>
   <div class="lang-switch">
     <button onclick="loadMarkdown('zh')">中文</button>
@@ -81,6 +92,12 @@
   <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
   <script>
     const md = window.markdownit();
+    const themeToggle = document.querySelector('.theme-toggle');
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      themeToggle.textContent = document.body.classList.contains('dark-mode') ? '🌙' : '🌞';
+    }
 
     async function loadMarkdown(lang) {
       const file = lang === 'zh' ? 'changelog_zh.md' : 'changelog_en.md';
