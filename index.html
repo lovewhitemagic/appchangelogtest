@@ -28,8 +28,27 @@
       position: relative;
     }
 
+    /* 左上角 App 图标和名称 */
+    .app-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .app-header img {
+      width: 48px;
+      height: 48px;
+      margin-right: 10px;
+    }
+
+    .app-header .app-name {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
     h1 {
-      text-align: center;
+      text-align: left;
+      margin-bottom: 20px;
     }
 
     .lang-switch {
@@ -46,13 +65,13 @@
     .changelog-entry {
       margin-bottom: 15px;
       padding-bottom: 10px;
-      border-bottom: 1px solid var(--divider-color); /* 浅灰色分割线 */
+      border-bottom: 1px solid var(--divider-color);
     }
 
     .changelog-entry h1 {
       font-size: 1.2em;
       margin-bottom: 5px;
-      text-align: left; /* 左对齐版本文字 */
+      text-align: left;
     }
 
     .changelog-entry p, .changelog-entry ul {
@@ -62,12 +81,11 @@
     .changelog-entry h1::after {
       content: attr(data-date);
       display: block;
-      font-size: 0.85em; /* 日期字体小一点 */
+      font-size: 0.85em;
       color: var(--date-color);
       margin-top: 2px;
     }
 
-    /* 深浅色切换按钮 */
     .theme-toggle {
       position: fixed;
       top: 20px;
@@ -79,13 +97,22 @@
   </style>
 </head>
 <body>
+  <!-- 手动切换深浅色模式按钮 -->
   <div class="theme-toggle" onclick="toggleTheme()">🌞</div>
 
+  <!-- App 图标和名称 -->
+  <div class="app-header">
+    <img id="app-icon" src="shift light.jpg" alt="App Icon">
+    <div class="app-name">Shift</div>
+  </div>
+
   <h1 id="title">App 更新日志</h1>
+
   <div class="lang-switch">
     <button onclick="loadMarkdown('zh')">中文</button>
     <button onclick="loadMarkdown('en')">English</button>
   </div>
+
   <div id="changelog"></div>
 
   <!-- markdown-it 库 -->
@@ -93,10 +120,21 @@
   <script>
     const md = window.markdownit();
     const themeToggle = document.querySelector('.theme-toggle');
+    const appIcon = document.getElementById('app-icon');
 
     function toggleTheme() {
       document.body.classList.toggle('dark-mode');
       themeToggle.textContent = document.body.classList.contains('dark-mode') ? '🌙' : '🌞';
+      updateAppIcon();
+    }
+
+    // 根据深浅色模式更新 App 图标
+    function updateAppIcon() {
+      if(document.body.classList.contains('dark-mode')) {
+        appIcon.src = 'shift dark.jpg';
+      } else {
+        appIcon.src = 'shift light.jpg';
+      }
     }
 
     async function loadMarkdown(lang) {
@@ -110,7 +148,6 @@
       const container = document.getElementById('changelog');
       container.innerHTML = html;
 
-      // 处理每条版本条目
       const headers = container.querySelectorAll('h1');
       headers.forEach(h => {
         const text = h.innerText;
