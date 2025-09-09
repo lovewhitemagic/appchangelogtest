@@ -1,59 +1,58 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>App 更新日志</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
-        h1 { text-align: center; }
-        .lang-switch { text-align: center; margin-bottom: 20px; }
-        button { margin: 0 5px; padding: 5px 10px; cursor: pointer; }
-        .log-entry { border-bottom: 1px solid #ccc; margin-bottom: 15px; padding-bottom: 10px; }
-        .version { font-weight: bold; }
-    </style>
+  <meta charset="UTF-8">
+  <title>App 更新日志</title>
+  <style>
+    body { font-family: Arial; padding: 20px; max-width: 800px; margin: auto; }
+    h1 { text-align: center; }
+    .lang-switch { text-align: center; margin-bottom: 20px; }
+    button { margin: 0 5px; padding: 5px 10px; cursor: pointer; }
+    .changelog-entry { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+  </style>
 </head>
 <body>
-    <h1 id="title">App 更新日志</h1>
+  <h1 id="title">App 更新日志</h1>
+  <div class="lang-switch">
+    <button onclick="loadMarkdown('zh')">中文</button>
+    <button onclick="loadMarkdown('en')">English</button>
+  </div>
+  <div id="changelog"></div>
 
-    <div class="lang-switch">
-        <button onclick="setLang('zh')">中文</button>
-        <button onclick="setLang('en')">English</button>
-    </div>
+  <!-- markdown-it 库 -->
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+  <script>
+    const md = window.markdownit();
 
-    <div id="changelog"></div>
+    async function loadMarkdown(lang) {
+      const file = lang === 'zh' ? 'changelog_zh.md' : 'changelog_en.md';
+      const res = await fetch(file);
+      const text = await res.text();
 
-    <script>
-        const logs = {
-            zh: [
-                { version: "v1.2.0", date: "2025-09-09", changes: ["新增每日统计图表", "优化启动速度"] },
-                { version: "v1.1.0", date: "2025-08-25", changes: ["支持多语言切换", "修复部分崩溃问题"] }
-            ],
-            en: [
-                { version: "v1.2.0", date: "2025-09-09", changes: ["Added daily statistics chart", "Optimized launch speed"] },
-                { version: "v1.1.0", date: "2025-08-25", changes: ["Added multi-language support", "Fixed some crashes"] }
-            ]
-        };
+      document.getElementById('title').innerText = lang === 'zh' ? 'App 更新日志' : 'App Changelog';
 
-        function setLang(lang) {
-            const title = lang === 'zh' ? 'App 更新日志' : 'App Changelog';
-            document.getElementById('title').innerText = title;
+      // 渲染 Markdown
+      const html = md.render(text);
 
-            const container = document.getElementById('changelog');
-            container.innerHTML = '';
+      // 按版本条目分割显示
+      const container = document.getElementById('changelog');
+      container.innerHTML = html;
 
-            logs[lang].forEach(entry => {
-                const div = document.createElement('div');
-                div.className = 'log-entry';
-                div.innerHTML = `
-                    <div class="version">${entry.version} - ${entry.date}</div>
-                    <ul>${entry.changes.map(c => `<li>${c}</li>`).join('')}</ul>
-                `;
-                container.appendChild(div);
-            });
+      // 给每个条目加 class
+      const headers = container.querySelectorAll('h1');
+      headers.forEach(h => {
+        const div = document.createElement('div');
+        div.className = 'changelog-entry';
+        h.parentNode.insertBefore(div, h);
+        div.appendChild(h);
+        while(div.nextSibling && div.nextSibling.tagName !== 'H1') {
+          div.appendChild(div.nextSibling);
         }
+      });
+    }
 
-        // 默认中文
-        setLang('zh');
-    </script>
+    // 默认中文
+    loadMarkdown('zh');
+  </script>
 </body>
 </html>
